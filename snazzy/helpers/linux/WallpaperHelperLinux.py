@@ -113,11 +113,13 @@ class WallpaperHelperLinux(object):
     
     
     
-    def changeWallpaper(self, absPath):
+    def changeWallpaper(self, absPath, stretch = True):
         if self.environment is None:
             self.environment = self.getDesktopEnv()
         #
         
+        #TODO: create methods for each to handle changing wallpaper type (aka stretched, fit, etc)
+
         if self.environment == self.ENV_UNITY:
             self.changeWallpaperUnity(absPath)
         elif self.environment == self.ENV_GNOME or self.environment == "gnome2":

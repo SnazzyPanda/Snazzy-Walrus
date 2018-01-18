@@ -10,6 +10,8 @@ from snazzy.io.SavingService import SavingService
 from snazzy.objs.ActiveList import ActiveList
 from snazzy.objs.ImageList import ImageList
 
+from snazzy.image.ImageManipulator import ImageManipulator
+
 class ScheduleReceiver(object):
     '''
     classdocs
@@ -113,8 +115,12 @@ class ScheduleReceiver(object):
         print("\n[DEBUG] Using list: " + str(self.activeList.listPath))
         print("[DEBUG] " + str(indexChosen) + ": " + str(randimg.src))
         
+        iman = ImageManipulator()
+        img = iman.loadImage(randimg.src)
+        landscape = iman.isImageLandscape(img)
+
         #change the wallpaper
-        self.oshelper.setWallpaper(randimg.src)
+        self.oshelper.setWallpaper(randimg.src, landscape)
         
         # update config file with latest index used
         self.updateConfigFile(indexChosen)

@@ -72,7 +72,7 @@ class OSHelper(object):
             return False
     # end havePlatform
     
-    def setWallpaper(self, relPath):
+    def setWallpaper(self, relPath, stretched = True):
         # if this is an unsupported platform, just leave since we cannot handle it
         if(self.platform is self.UNKNOWN_ID or self.wallhelper is None):
             print("platform not supported!")
@@ -81,5 +81,5 @@ class OSHelper(object):
         absPath = IOHelper().getAbsPath(relPath)
         
         # change wallpaper with related wallpaper helper
-        self.wallhelper.changeWallpaper(absPath)
+        self.wallhelper.changeWallpaper(absPath, stretched)
     # end setWallpaper

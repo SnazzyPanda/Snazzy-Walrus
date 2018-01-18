@@ -229,3 +229,11 @@ class ImageManipulator(object):
         # end for
         return output
     # end generatePreviewImage
+
+    def isImageLandscape(self, img = None):
+        if(img is None):
+            return True
+        width = img.width
+        height = img.height
+        return (width > height)
+    # end isImageLandscape
