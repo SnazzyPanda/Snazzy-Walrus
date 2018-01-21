@@ -3,7 +3,7 @@ _A cross-platform(hopefully) desktop image rotator._
 
 **Do not expect this readme to always be up to date, I usually neglect updating it.**
 
-Built with Python 3.6 (though it should theoretically work on any 3.x as long as you are not outputting non-ASCII? characters on Windows).\
+Built with Python 3.6 (though it should theoretically work on any 3.x as long as you are not outputting non-ASCII? characters on Windows).
 
 Currently makes use of the following Python packages:
 
@@ -70,13 +70,3 @@ Would be nice to have:
  - Must work across restarting computer (issues with storing pid)
 - Possibly only allow 1 long-running instance at a time?
 - I feel like there much more, but I cannot think of anything else right now.
-
-## FAQ
-_That nobody is asking_
-
-**You did not following PEP8 naming conventions.**
-
-I know and do not really care.
-
-
-
