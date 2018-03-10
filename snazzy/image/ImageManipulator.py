@@ -47,11 +47,11 @@ class ImageManipulator(object):
     # end constructor
 
     def getScaledWidth(self, originalWidth, originalHeight, newHeight = DEFAULT_HEIGHT):
-        return ((originalWidth * newHeight) / originalHeight)
+        return int((originalWidth * newHeight) / originalHeight)
     # end getScaledWidth
 
     def getScaledHeight(self, originalWidth, originalHeight, newWidth = DEFAULT_WIDTH):
-        return ((newWidth * originalHeight) / originalWidth)
+        return int((newWidth * originalHeight) / originalWidth)
     # end getScaledHeight
 
     def resizeImageToSize(self, image, width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT, sampleToApply = DEFAULT_SAMPLE):
@@ -68,22 +68,29 @@ class ImageManipulator(object):
                 img.save(imgPath)
     # end saveImage
 
+    def imageIsPortrait(self, img = None):
+        if(img is not None):
+            if(img.height > img.width):
+                return True
+        return False
+    # end imageIsPortrait
+
     def relativeResizeByWidth(self, image, newWidth = DEFAULT_WIDTH, sampleToApply = DEFAULT_SAMPLE):
-        newHeight = self.getScaledHeight(image.width(), image.height(), newWidth)
+        newHeight = self.getScaledHeight(image.width, image.height, newWidth)
         return image.resize((newWidth, newHeight), sampleToApply)
     # end relativeResizeByWidht
 
     def relativeResizeByHeight(self, image, newHeight = DEFAULT_HEIGHT, sampleToApply = DEFAULT_SAMPLE):
-        newWidth = self.getScaledWidth(image.width(), image.height(), newHeight)
+        newWidth = self.getScaledWidth(image.width, image.height, newHeight)
         return image.resize((newWidth, newHeight), sampleToApply)
     # end relativeResizeByHeight
 
     def cropToSize(self, image, startX = DEFAULT_START_X, startY = DEFAULT_START_Y,
                    newWidth = DEFAULT_WIDTH, newHeight = DEFAULT_HEIGHT):
-        if((startX + newWidth) > image.width()):
-            newWidth = image.width() - startX
-        if((startY + newHeight) > image.height()):
-            newHeight = image.height() - startY
+        if((startX + newWidth) > image.width):
+            newWidth = int(image.width - startX)
+        if((startY + newHeight) > image.height):
+            newHeight = int(image.height - startY)
         # 4-tuple defining the left, upper, right, and lower pixel coordinate.
         return image.crop((startX, startY, (startX + newWidth), (startY + newHeight)))
     # end cropToSize
@@ -107,14 +114,13 @@ class ImageManipulator(object):
             # vertical
             startY = self.getStartYByLocation(image, height, location)
         else:
-            print("Unsupported crop direction supplied: " + direction + ". Trying again with default...")
+            print("[WARN] Unsupported crop direction supplied: " + direction + ". Trying again with default...")
             return self.cropByLocation(image, width, height, self.DEFAULT_CROP_DIRECTION, location)
 
-
-        if((startY + height) > image.height()):
-            height = image.height() - startY
-        if((startX + width) > image.width()):
-            width = image.width() - startX
+        if((startY + height) > image.height):
+            height = image.height - startY
+        if((startX + width) > image.width):
+            width = image.width - startX
         #The box is a 4-tuple defining the left, upper, right, and lower pixel coordinate.
         return image.crop((startX, startY, width, height))
     # end cropByLocation
@@ -122,46 +128,46 @@ class ImageManipulator(object):
     def getStartXByLocation(self, image, width = DEFAULT_WIDTH, location = DEFAULT_CROP_POSITION):
         # horizontal
         # calculate the maximum x possible from given values
-        maxX = image.width() - width
+        maxX = image.width - width
         if(maxX < 0):
-            print("Supplied width exceeded available width. Given: " + width + ", avail: " + image.width())
-            maxX = image.width() # x was negative, so revert to image width (aka last x pixel)
+            print("[WARN] Supplied width exceeded available width. Given: " + width + ", avail: " + image.width)
+            maxX = image.width # x was negative, so revert to image width (aka last x pixel)
         startX = 0
         if(location is self.CROP_RANDOM):
             startX = random.randint(0, maxX)
         elif(location is self.CROP_CENTER):
-            startX = (image.width() - width) / 2
+            startX = (image.width - width) / 2
         elif(location is self.CROP_RT):
-            startX = image.width() - width
+            startX = image.width - width
         elif(location is self.CROP_LB):
             startX = 0
         else:
             # no match
             startX = random.randint(0, maxX)
-            print("Horizontally: invalid position given: " + location + ". using default position.")
+            print("[WARN] Horizontally: invalid position given: " + location + ". using default position.")
             return self.getStartXByLocation(image, width, self.DEFAULT_CROP_POSITION)
         return startX
     # end getStartXByLocation
 
     def getStartYByLocation(self, image, height = DEFAULT_HEIGHT, location = DEFAULT_CROP_POSITION):
-        maxY = image.height() - height
+        maxY = image.height - height
         if(maxY < 0):
-            print("Supplied height exceeded available height. Given: " + height + ", avail: " + image.height())
-            maxY = image.height()
+            print("[WARN] Supplied height exceeded available height. Given: " + height + ", avail: " + image.height)
+            maxY = image.height
 
         startY = 0
         if(location is self.CROP_RANDOM):
             startY = random.randint(0, maxY)
         elif(location is self.CROP_CENTER):
-            startY = (image.height() - height) / 2
+            startY = (image.height - height) / 2
         elif(location is self.CROP_RT):
-            startY = image.height() - height
+            startY = image.height - height
         elif(location is self.CROP_LB):
             startY = 0
         else:
             # no match
             startY = random.randint(0, maxY)
-            print("Horizontally: invalid position given: " + location + ". using default position.")
+            print("[WARN] Horizontally: invalid position given: " + location + ". using default position.")
             return self.getStartXByLocation(image, height, self.DEFAULT_CROP_POSITION)
         return startY
     # end getStartYByLocation
@@ -175,7 +181,7 @@ class ImageManipulator(object):
 
         # return none if empty list of images to use
         if(0 == len(inImgList)):
-            print("Apparently empty list given to genPreview: " + len(inImgList))
+            print("[ERROR] Apparently empty list given to genPreview: " + len(inImgList))
             return None
 
         # TODO: consider adding border to images?
