@@ -107,7 +107,7 @@ class IOHelper(object):
         fileList = []
         
         for i in lst:
-            if str(i).endswith(tuple(extList)):
+            if str(i).lower().endswith(tuple(extList)):
                 fileList += [i]
             # end if
         # end for
