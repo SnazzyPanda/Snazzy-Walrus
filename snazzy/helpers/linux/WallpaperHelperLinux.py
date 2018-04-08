@@ -164,7 +164,7 @@ class WallpaperHelperLinux(object):
         os.system("gsettings set org.gnome.desktop.background picture-uri file://" + shlex.quote(absPath))
     # end changeWallpaperGNOME
 
-    def changeWallpaperUnity(self, absPath):
+    #def changeWallpaperUnity(self, absPath):
         #from gi.repository import Gio
         #gsettings = Gio.Settings.new(self.SCHEMA)
         #gsettings.set_string(self.KEY, "file://" + shlex.quote(absPath))
