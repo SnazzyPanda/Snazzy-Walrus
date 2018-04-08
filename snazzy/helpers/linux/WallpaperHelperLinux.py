@@ -4,7 +4,7 @@
 '''
 
 #import commands
-from gi.repository import Gio
+
 import os
 import shlex
 
@@ -121,7 +121,7 @@ class WallpaperHelperLinux(object):
         #TODO: create methods for each to handle changing wallpaper type (aka stretched, fit, etc)
 
         if self.environment == self.ENV_UNITY:
-            self.changeWallpaperUnity(absPath)
+            self.changeWallpaperGNOME(absPath, stretch)
         elif self.environment == self.ENV_GNOME or self.environment == "gnome2":
             self.changeWallpaperGNOME(absPath, stretch)
         elif self.environment == self.ENV_CINNAMON:
@@ -165,8 +165,9 @@ class WallpaperHelperLinux(object):
     # end changeWallpaperGNOME
 
     def changeWallpaperUnity(self, absPath):
-        gsettings = Gio.Settings.new(self.SCHEMA)
-        gsettings.set_string(self.KEY, "file://" + shlex.quote(absPath))
+        #from gi.repository import Gio
+        #gsettings = Gio.Settings.new(self.SCHEMA)
+        #gsettings.set_string(self.KEY, "file://" + shlex.quote(absPath))
     # end changeWallpaperUnity
 
     def changeWallpaperKDE4(self, absPath):
