@@ -123,7 +123,7 @@ class WallpaperHelperLinux(object):
         if self.environment == self.ENV_UNITY:
             self.changeWallpaperUnity(absPath)
         elif self.environment == self.ENV_GNOME or self.environment == "gnome2":
-            self.changeWallpaperGNOME(absPath)
+            self.changeWallpaperGNOME(absPath, stretch)
         elif self.environment == self.ENV_CINNAMON:
             self.changeWallpaperCinnamon(absPath, stretch)
         elif self.environment == self.ENV_MATE:
@@ -143,13 +143,13 @@ class WallpaperHelperLinux(object):
     def changeWallpaperCinnamon(self, absPath, stretched = True):
         # From: https://unix.stackexchange.com/questions/59653/change-desktop-wallpaper-from-terminal
         if(stretched):
-            os.system('gsettings set org.cinnamon.desktop.background picture-options "stretched"') #TODO: Remove this before any public release. (Make an option?)
+            os.system('gsettings set org.cinnamon.desktop.background picture-options "stretched"')
         else:
             os.system('gsettings set org.cinnamon.desktop.background picture-options "scaled"')
         os.system('gsettings set org.cinnamon.desktop.background picture-uri file://' + shlex.quote(absPath))
     #end changeWallpaperCinnamon
 
-    def changeWallpaperGNOME(self, absPath):
+    def changeWallpaperGNOME(self, absPath, stretched = True):
         #command = "gconftool-2 --set /desktop/gnome/background/picture_filename --type string '" + absPath + "'"
         #command = "gconftool-2 --set /desktop/gnome/background/picture_filename --type string '" + absPath + "'"
         #status = commands.getstatusoutput(command)  # status=0 if success
@@ -157,7 +157,10 @@ class WallpaperHelperLinux(object):
         #os.system("gsettings set org.gnome.desktop.background picture-uri file:///home/user/Pictures/wallpaper/Stairslwallpaper.png")
 
         #alternate:
-        os.system('gsettings set org.gnome.desktop.background picture-options "stretched"') #TODO: Remove this before any public release. (Make an option?)
+        if(stretched):
+            os.system('gsettings set org.gnome.desktop.background picture-options "stretched"')
+        else:
+            os.system('gsettings set org.gnome.desktop.background picture-options "scaled"')
         os.system("gsettings set org.gnome.desktop.background picture-uri file://" + shlex.quote(absPath))
     # end changeWallpaperGNOME
 
