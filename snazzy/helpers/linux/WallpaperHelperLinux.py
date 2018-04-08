@@ -131,9 +131,9 @@ class WallpaperHelperLinux(object):
         elif self.environment == self.ENV_XFCE4:
             self.changeWallpaperXFCE4(absPath)
         elif self.environment == self.ENV_LXDE:
-            self.changeWallpaperLXDE(absPath) #needs more testing
+            self.changeWallpaperLXDE(absPath, stretch)
         elif self.environment == self.ENV_LXQT:
-            self.changeWallpaperLXQT(absPath)
+            self.changeWallpaperLXQT(absPath, stretch)
         else:
             print("unknown or unsupported linux environment: " + str(self.environment))
         # end if elif else
@@ -214,18 +214,26 @@ class WallpaperHelperLinux(object):
         subprocess.Popen(args)
     # end changeWallpaperXFCE4
 
-    def changeWallpaperLXDE(self, absPath):
+    def changeWallpaperLXDE(self, absPath, stretched = True):
         #from: https://stackoverflow.com/questions/1977694/how-can-i-change-my-desktop-background-with-python
         #can force different size with: --wallpaper-mode=
+        if(stretched):
+            os.system("pcmanfm --wallpaper-mode=stretch")
+        else:
+            os.system("pcmanfm --wallpaper-mode=fit")
         # scaled, stretch, center, fit (none of these fills scales to screen size, so I dont apply any of them)
         os.system("pcmanfm --set-wallpaper " + shlex.quote(absPath))
     # end changeWallpaperLXDE
 
-    def changeWallpaperLXQT(self, absPath):
+    def changeWallpaperLXQT(self, absPath, stretched = True):
         # This method of changing wallpapers seems to take a few seconds to apply...
         # may take up to 2 minutes to apply...?
         #can force different size with: --wallpaper-mode=
         # scaled, stretch, center, fit (none of these fills scales to screen size, so I dont apply any of them)
+        if(stretched):
+            os.system("pcmanfm-qt --wallpaper-mode=stretch")
+        else:
+            os.system("pcmanfm-qt --wallpaper-mode=fit")
         #NOTE: I have run into issues (in emulated environment) when screen does not properly refresh, desktop/computer becoming completely frozen and unusable, and possibly others I do not remember...
         os.system("pcmanfm-qt --set-wallpaper " + shlex.quote(absPath))
     # end changeWallpaperLXDE
