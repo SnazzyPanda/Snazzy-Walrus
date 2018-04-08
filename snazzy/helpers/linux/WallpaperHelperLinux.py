@@ -105,7 +105,7 @@ class WallpaperHelperLinux(object):
                 return "gnome2"
             print("Unhandled thing in WallpaperHelperLinux.py getDesktopEnv!: " + str(os.environ.get('GNOME_DESKTOP_SESSION_ID')))
         #From http://ubuntuforums.org/showthread.php?t=652320
-        elif os.environ.get('XDG_CURRENT_DESKTOP').tolower().startswith('xfce'):
+        elif os.environ.get('XDG_CURRENT_DESKTOP').lower().startswith('xfce'):
             return "xfce4"
         elif self.is_running("ksmserver"):
             return "kde"
