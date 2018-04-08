@@ -129,7 +129,7 @@ class WallpaperHelperLinux(object):
         elif self.environment == self.ENV_MATE:
             self.changeWallpaperMATE(absPath, stretch) #needs testing!
         elif self.environment == self.ENV_XFCE4:
-            self.changeWallpaperXFCE4(absPath)
+            self.changeWallpaperXFCE4(absPath, stretch)
         elif self.environment == self.ENV_LXDE:
             self.changeWallpaperLXDE(absPath, stretch)
         elif self.environment == self.ENV_LXQT:
@@ -197,10 +197,14 @@ class WallpaperHelperLinux(object):
         # end try MATE1.6 or greater/catch otherwise
     # end changeWallpaperMATE
 
-    def changeWallpaperXFCE4(self, absPath):
+    def changeWallpaperXFCE4(self, absPath, stretched = True):
         import subprocess
         #from:
         imageStyle = "3" #stretched by default
+        if(not stretched):
+            imageStyle = "4" #scaled
+        # end if not stretched
+
         #From http://www.commandlinefu.com/commands/view/2055/change-wallpaper-for-xfce4-4.6.0
         #pretend conf does not already exist, because on some systems it might not (MX-17, possibly Manjaro?):
         useImageForBackground = ["xfconf-query", "-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/image-show", "-n", "-t", "string", "-s", "true"]
