@@ -11,7 +11,7 @@ import shlex
 '''
     linux/window:
     https://stackoverflow.com/questions/1977694/change-desktop-background
-    
+
     gnome desktop:
     import commands
     command = "gconftool-2 --set /desktop/gnome/background/picture_filename --type string '/path/to/file.jpg'"
@@ -22,11 +22,11 @@ class WallpaperHelperLinux(object):
     '''
     classdocs
     '''
-    
+
     SCHEMA = 'org.gnome.desktop.background'
     KEY = 'picture-uri'
     ENVIRONMENT = 'DESKTOP_SESSION'
-    
+
     ENV_GNOME = "gnome"
     ENV_UNITY = "unity"
     ENV_CINNAMON = "cinnamon"
@@ -41,33 +41,33 @@ class WallpaperHelperLinux(object):
         '''
         Constructor
         '''
-        
+
         #self.environment = self.getEnvironment()
         self.environment = self.getDesktopEnv()
-        
+
     # end constructor
-    
+
     #def getEnvironment(self):
     #    env = os.environ.get(self.ENVIRONMENT)
     #    print(env)
     #    return env
     # end getEnvironment
-    
+
     def getDesktopEnv(self):
         '''
-        taken from: 
+        taken from:
         https://stackoverflow.com/questions/2035657/what-is-my-current-desktop-environment
         '''
         desktop_session = os.environ.get(self.ENVIRONMENT).lower()
-        
+
         if desktop_session == "default":
             # TODO: make sure this does not mess up other things!!!
             # fix for Zorin environment
             desktop_session = os.environ.get("XDG_CURRENT_DESKTOP").lower()
-        
+
         if desktop_session is not None: #easier to match if we doesn't have  to deal with caracter cases
             desktop_session = desktop_session.lower()
-            if desktop_session in ["gnome","unity", "cinnamon", "mate", "xfce4", "lxde", "fluxbox", 
+            if desktop_session in ["gnome","unity", "cinnamon", "mate", "xfce4", "lxde", "fluxbox",
                                    "blackbox", "openbox", "icewm", "jwm", "afterstep","trinity", "kde"]:
                 return desktop_session
             # For some, desktop_session will be something like: /usr/share/xsessions/YOUR-DESKTOP-SESSSION, these are to catch those cases
@@ -88,9 +88,9 @@ class WallpaperHelperLinux(object):
             elif desktop_session.startswith("ubuntu"):
                 return self.ENV_UNITY
             elif "lxde" in desktop_session or desktop_session.startswith("lubuntu"):
-                return "lxde" 
-            elif desktop_session.startswith("kubuntu"): 
-                return "kde" 
+                return "lxde"
+            elif desktop_session.startswith("kubuntu"):
+                return "kde"
             elif desktop_session.startswith("razor"): # e.g. razorkwin
                 return "razor-qt"
             elif desktop_session.startswith("wmaker"): # e.g. wmaker-common
@@ -110,14 +110,14 @@ class WallpaperHelperLinux(object):
         elif self.is_running("ksmserver"):
             return "kde"
     # end getDesktopEnv
-    
-    
-    
+
+
+
     def changeWallpaper(self, absPath, stretch = True):
         if self.environment is None:
             self.environment = self.getDesktopEnv()
         #
-        
+
         #TODO: create methods for each to handle changing wallpaper type (aka stretched, fit, etc)
 
         if self.environment == self.ENV_UNITY:
@@ -125,7 +125,7 @@ class WallpaperHelperLinux(object):
         elif self.environment == self.ENV_GNOME or self.environment == "gnome2":
             self.changeWallpaperGNOME(absPath)
         elif self.environment == self.ENV_CINNAMON:
-            self.changeWallpaperCinnamon(absPath)
+            self.changeWallpaperCinnamon(absPath, stretch)
         elif self.environment == self.ENV_MATE:
             self.changeWallpaperMATE(absPath) #needs testing!
         elif self.environment == self.ENV_XFCE4:
@@ -137,38 +137,41 @@ class WallpaperHelperLinux(object):
         else:
             print("unknown or unsupported linux environment: " + str(self.environment))
         # end if elif else
-        
+
     # end changeWallpaper
 
-    def changeWallpaperCinnamon(self, absPath):
+    def changeWallpaperCinnamon(self, absPath, stretched = True):
         # From: https://unix.stackexchange.com/questions/59653/change-desktop-wallpaper-from-terminal
-        os.system('gsettings set org.cinnamon.desktop.background picture-options "stretched"') #TODO: Remove this before any public release. (Make an option?)
+        if(stretched):
+            os.system('gsettings set org.cinnamon.desktop.background picture-options "stretched"') #TODO: Remove this before any public release. (Make an option?)
+        else:
+            os.system('gsettings set org.cinnamon.desktop.background picture-options "scaled"')
         os.system('gsettings set org.cinnamon.desktop.background picture-uri file://' + shlex.quote(absPath))
     #end changeWallpaperCinnamon
-    
+
     def changeWallpaperGNOME(self, absPath):
         #command = "gconftool-2 --set /desktop/gnome/background/picture_filename --type string '" + absPath + "'"
         #command = "gconftool-2 --set /desktop/gnome/background/picture_filename --type string '" + absPath + "'"
         #status = commands.getstatusoutput(command)  # status=0 if success
-        
+
         #os.system("gsettings set org.gnome.desktop.background picture-uri file:///home/user/Pictures/wallpaper/Stairslwallpaper.png")
-        
+
         #alternate:
         os.system('gsettings set org.gnome.desktop.background picture-options "stretched"') #TODO: Remove this before any public release. (Make an option?)
         os.system("gsettings set org.gnome.desktop.background picture-uri file://" + shlex.quote(absPath))
     # end changeWallpaperGNOME
-    
+
     def changeWallpaperUnity(self, absPath):
         gsettings = Gio.Settings.new(self.SCHEMA)
         gsettings.set_string(self.KEY, "file://" + shlex.quote(absPath))
     # end changeWallpaperUnity
-    
+
     def changeWallpaperKDE4(self, absPath):
         # TODO: find some way to successfully change wallpapers in KDE (any and all versions I can test, preferrably)
         # attempt to change the wallpaper?
         #dbus-send --session --dest=org.new_wallpaper.Plasmoid --type=method_call /org/new_wallpaper/Plasmoid/0 org.new_wallpaper.Plasmoid.SetWallpaper string:/path/to/your/wallpaper
         os.system('dbus-send --session --dest=org.new_wallpaper.Plasmoid --type=method_call /org/new_wallpaper/Plasmoid/0 org.new_wallpaper.Plasmoid.SetWallpaper string:' + shlex.quote(absPath))
-        
+
     # end changeWallpaperKDE4
 
     def changeWallpaperMATE(self, absPath):
@@ -192,7 +195,7 @@ class WallpaperHelperLinux(object):
 #
     def changeWallpaperXFCE4(self, absPath):
         import subprocess
-        #from: 
+        #from:
         #From http://www.commandlinefu.com/commands/view/2055/change-wallpaper-for-xfce4-4.6.0
         #if first_run:
         args0 = ["xfconf-query", "-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/image-path", "-s", absPath]
