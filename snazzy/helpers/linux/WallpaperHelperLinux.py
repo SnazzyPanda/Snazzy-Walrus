@@ -105,7 +105,7 @@ class WallpaperHelperLinux(object):
                 return "gnome2"
             print("Unhandled thing in WallpaperHelperLinux.py getDesktopEnv!: " + str(os.environ.get('GNOME_DESKTOP_SESSION_ID')))
         #From http://ubuntuforums.org/showthread.php?t=652320
-        elif self.is_running("xfce-mcs-manage"):
+        elif os.environ.get('XDG_CURRENT_DESKTOP').tolower().startswith('xfce'):
             return "xfce4"
         elif self.is_running("ksmserver"):
             return "kde"
@@ -186,21 +186,28 @@ class WallpaperHelperLinux(object):
         # end try MATE1.6 or greater/catch otherwise
     # end changeWallpaperMATE
 
-
-#
     def changeWallpaperXFCE4(self, absPath):
         import subprocess
-        #from: 
+        imageStyle = "3" #stretched by default
         #From http://www.commandlinefu.com/commands/view/2055/change-wallpaper-for-xfce4-4.6.0
-        #if first_run:
-        args0 = ["xfconf-query", "-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/image-path", "-s", absPath]
-        args1 = ["xfconf-query", "-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/image-style", "-s", "3"]
-        args2 = ["xfconf-query", "-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/image-show", "-s", "true"]
-        subprocess.Popen(args0)
-        subprocess.Popen(args1)
-        subprocess.Popen(args2)
-        args = ["xfdesktop","--reload"]
-        subprocess.Popen(args)
+        #pretend conf does not already exist, because on some systems it might not (MX-17, possibly Manjaro?):
+        useImageForBackground = ["xfconf-query", "-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/image-show", "-n", "-t", "string", "-s", "true"]
+        subprocess.Popen(useImageForBackground)
+        # https://forum.xfce.org/viewtopic.php?id=10894
+        # this is probably sufficient for xfce < 4.11
+        primaryImage = ["xfconf-query", "-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/image-path", "-s", absPath]
+        subprocess.Popen(primaryImage)
+        # this should get the main workspace for xfce > 4.11
+        workspace0Image = ["xfconf-query", "-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/workspace0/last-image", "-s", absPath]
+        subprocess.Popen(workspace0Image)
+
+        styleArgs = ["xfconf-query", "-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/image-style", "-s", imageStyle]
+        subprocess.Popen(styleArgs)
+        workStyleArgs = ["xfconf-query", "-c", "xfce4-desktop", "-p", "/backdrop/screen0/monitor0/workspace0/image-style", "-s", imageStyle]
+        subprocess.Popen(workStyleArgs)
+
+        reloadXfdesktop = ["xfdesktop","--reload"]
+        subprocess.Popen(reloadXfdesktop)
     # end changeWallpaperXFCE4
 
     def changeWallpaperLXDE(self, absPath):
