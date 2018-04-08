@@ -127,7 +127,7 @@ class WallpaperHelperLinux(object):
         elif self.environment == self.ENV_CINNAMON:
             self.changeWallpaperCinnamon(absPath, stretch)
         elif self.environment == self.ENV_MATE:
-            self.changeWallpaperMATE(absPath) #needs testing!
+            self.changeWallpaperMATE(absPath, stretch) #needs testing!
         elif self.environment == self.ENV_XFCE4:
             self.changeWallpaperXFCE4(absPath)
         elif self.environment == self.ENV_LXDE:
@@ -177,13 +177,16 @@ class WallpaperHelperLinux(object):
 
     # end changeWallpaperKDE4
 
-    def changeWallpaperMATE(self, absPath):
+    def changeWallpaperMATE(self, absPath, stretched = True):
         import subprocess
         #TODO: see if we can actually detect MATE version to avoid possible ugly output from failure?
         #from: https://stackoverflow.com/questions/1977694/how-can-i-change-my-desktop-background-with-python
         try: # MATE >= 1.6
             # info from http://wiki.mate-desktop.org/docs:gsettings
-            args = ["gsettings", "set", "org.mate.background", "picture-options", "stretched"] #TODO: Remove this before any public release. (Make an option?)
+            if(stretched):
+                args = ["gsettings", "set", "org.mate.background", "picture-options", "stretched"]
+            else:
+                args = ["gsettings", "set", "org.mate.background", "picture-options", "scaled"]
             subprocess.Popen(args)
             args = ["gsettings", "set", "org.mate.background", "picture-filename", "'%s'" % absPath]
             subprocess.Popen(args)
